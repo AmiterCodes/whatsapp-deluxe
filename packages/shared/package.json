@@ -1,0 +1,19 @@
+{
+  "name": "@whatsapp-deluxe/shared",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@react-fullstack/fullstack": "0.1.23",
+    "whatsapp-web.js": "1.11.0"
+  },
+  "devDependencies": {
+    "typescript": "4.0.5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
