@@ -2,6 +2,7 @@ import { Client, ClientSession } from 'whatsapp-web.js'
 import ChatsService from "./services/chat";
 // @ts-ignore
 import qrcode from 'qrcode-terminal';
+import Emitter from '../utils/emitter';
 
 declare var process: {
     env: {
@@ -10,11 +11,19 @@ declare var process: {
 }
 
 
+interface WhatsAppDeluxeAPIEvents {
+    initialize: boolean;
+}
+
 class WhatsAppDeluxeAPI {
 	private client!: Client;
     public chats = new ChatsService();
-
-	public intialize(session?: ClientSession) {
+    public readonly emitter = new Emitter<WhatsAppDeluxeAPIEvents>();
+    private _isInitialized = false;
+	public get isInitialized() {
+		return this._isInitialized;
+	}
+	public initialize(session?: ClientSession) {
         this.client = new Client({
 			session,
             puppeteer: {
@@ -28,10 +37,11 @@ class WhatsAppDeluxeAPI {
         })
 
         this.client.on('ready', () => {
-            console.log('READY')
+            this._isInitialized = true;
+            this.emitter.call("initialize", true);
         })
 
-        this.chats.intialize(this.client);
+        this.chats.initialize(this.client);
 	}
 }
 

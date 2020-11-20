@@ -18,6 +18,16 @@ const ChatList = ({ setChatId }: ChatListProps) => {
         API.chats.getGroupChats().then((chats) => {
             setGroupChats(chats);
         })
+        const groupChatFetching = API.chats.emitter.on("newGroupViewChats", (newGroupChats) => {
+            setGroupChats(newGroupChats);
+        })
+        const userChatFetching = API.chats.emitter.on("newUserViewChats", (newUserChats) => {
+            setUserChats(newUserChats);
+        })
+        return () => {
+            groupChatFetching.remove();
+            userChatFetching.remove();
+        }
     }, [])
     return (<ViewsProvider<ViewsInterface>>
         {({ ChatListView }) => <ChatListView

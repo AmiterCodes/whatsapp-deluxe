@@ -6,7 +6,7 @@ import * as Components from "./components";
 function App() {
   return (
     <div>
-      <Client host={"localhost"} port={9494} views={Components} /> 
+      <Client host={"localhost"} port={5000} views={Components} /> 
     </div>
   );
 }

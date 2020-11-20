@@ -1,19 +1,21 @@
 import { Client } from "whatsapp-web.js";
+import Emitter from "../utils/emitter";
 
-export abstract class WhatsAppDeluxeAPIService {
+export abstract class WhatsAppDeluxeAPIService<Events extends Record<string, any>> {
 	public client!: Client;
-	private _isIntialized = false;
-	public get isIntialized() {
-		return this._isIntialized;
+	private _isInitialized = false;
+	public readonly emitter = new Emitter<Events>();
+	public get isInitialized() {
+		return this._isInitialized;
 	}
-	abstract serviceDidIntialized?(): unknown;
-	intialize(client: Client) {
+	abstract serviceDidInitialized?(): unknown;
+	initialize(client: Client) {
 		this.client = client;
 		this.client.on("ready", () => {
-            this._isIntialized = true;
+            this._isInitialized = true;
             
-		if (this.serviceDidIntialized) {
-			this.serviceDidIntialized();
+		if (this.serviceDidInitialized) {
+			this.serviceDidInitialized();
 		}
 		})
 	}

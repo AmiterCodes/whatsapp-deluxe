@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@react-fullstack/fullstack": "0.1.22",
-    "@react-fullstack/fullstack-socket-client": "0.1.10",
+    "@react-fullstack/fullstack": "0.1.23",
+    "@react-fullstack/fullstack-socket-client": "0.1.25",
     "@react-fullstack/render": "0.1.23",
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.1.2",
