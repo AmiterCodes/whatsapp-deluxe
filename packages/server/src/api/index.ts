@@ -1,5 +1,6 @@
 import { Client, ClientSession } from 'whatsapp-web.js'
 import ChatsService from "./services/chat";
+import ContactService from './services/contact'
 // @ts-ignore
 import qrcode from 'qrcode-terminal';
 import Emitter from '../utils/emitter';
@@ -18,6 +19,8 @@ interface WhatsAppDeluxeAPIEvents {
 class WhatsAppDeluxeAPI {
 	private client!: Client;
     public chats = new ChatsService();
+    public contacts = new ContactService();
+
     public readonly emitter = new Emitter<WhatsAppDeluxeAPIEvents>();
     private _isInitialized = false;
 	public get isInitialized() {
@@ -27,7 +30,7 @@ class WhatsAppDeluxeAPI {
         this.client = new Client({
 			session,
             puppeteer: {
-                headless: !process.env.DEBUG
+                headless: false
             }
         })
         this.client.initialize();

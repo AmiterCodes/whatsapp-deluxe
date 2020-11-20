@@ -18,8 +18,11 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 	private async autoUpdateChats() {
 		try {
 		this.chats = await this.client.getChats();
+		console.log('Loaded all chats!')
 		this.userChats = await this.getUserChats();
+		console.log('loaded User Chats')
 		this.groupChats = await this.getGroupChats();
+		console.log('loaded Group Chats')
 		this.emitter.call("newUserViewChats", this.userChats);
 		this.emitter.call("newGroupViewChats", this.groupChats);
 		this.client.on(Events.MESSAGE_CREATE,async (msg) => {
@@ -70,7 +73,7 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 	private async mapChat (chat: WhatsAppChat): Promise<ViewChat> {
 		let messages = await chat.fetchMessages({ limit: 1 })
 		let lastMessage: MessagePreview | undefined;
-		
+		//let imageUrl = await this.client.getProfilePicUrl(chat.id._serialized);
 
 		if(messages.length !== 0) {
 			const msg = messages[0];
@@ -78,7 +81,7 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 			const stringifiedBody = await this.messagePreview(msg);
 			
 
-			lastMessage = { author, date: new Date(msg.timestamp), stringifiedBody }
+			lastMessage = { author, date: new Date(msg.timestamp), stringifiedBody, messageAck: msg.ack }
 		}
 
 		
@@ -90,7 +93,9 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 			name: chat.name,
 			lastMessage,
 			timestamp: chat.timestamp,
-			unreadCount: chat.unreadCount 
+			unreadCount: chat.unreadCount,
+			imageUrl: undefined
+
 		}
 	}
 

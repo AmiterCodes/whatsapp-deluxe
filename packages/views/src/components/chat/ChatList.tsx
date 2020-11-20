@@ -5,7 +5,7 @@ import ChatButton from "./ChatButton"
 
 class ChatList extends Component<ViewsInterface["ChatListView"]> {
 	render() {
-		return this.props.chats.map((chat) => <ChatButton chat={chat} />)
+		return this.props.chats.map((chat) => <ChatButton key={chat.id} chat={chat} />)
 	}
 }
 

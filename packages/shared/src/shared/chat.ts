@@ -18,7 +18,7 @@ export interface Chat {
     /** Last Message that was sent on the chat */
     lastMessage: MessagePreview | undefined;
 
-
+    imageUrl?: string;
 }
 
 
