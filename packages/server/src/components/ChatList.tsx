@@ -33,7 +33,7 @@ const ChatList = ({ setChatId }: ChatListProps) => {
         {({ ChatListView }) => <ChatListView
             setActiveChat={setChatId}
             chats={userChats}
-        />}
+    />}
     </ViewsProvider>)
 }
 

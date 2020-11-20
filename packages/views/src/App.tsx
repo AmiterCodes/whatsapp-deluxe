@@ -1,6 +1,7 @@
 import React from 'react';
 import { Client } from '@react-fullstack/fullstack-socket-client'
 import * as Components from "./components";
+import { ViewsToComponents } from '@react-fullstack/fullstack';
 
 
 function App() {

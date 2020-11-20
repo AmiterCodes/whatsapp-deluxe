@@ -19,6 +19,8 @@ export interface Chat {
     lastMessage: MessagePreview | undefined;
 
     imageUrl?: string;
+
+    pinned: boolean;
 }
 
 

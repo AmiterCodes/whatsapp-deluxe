@@ -44,7 +44,9 @@ class WhatsAppDeluxeAPI {
             this.emitter.call("initialize", true);
         })
 
+        this.contacts.initialize(this.client);
         this.chats.initialize(this.client);
+        
 	}
 }
 

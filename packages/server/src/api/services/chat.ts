@@ -3,6 +3,8 @@ import { Chat as ViewChat } from '@whatsapp-deluxe/shared/src/shared/chat'
 import { WhatsAppDeluxeAPIService } from "../service";
 import { sleep } from "../../utils/time"
 import { MessagePreview } from "@whatsapp-deluxe/shared/src/shared/message";
+import API from "../";
+
 
 
 interface ChatsEvents {
@@ -31,17 +33,36 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 			const foundChat = this.chats.find((currentChat) => currentChat.id._serialized === chat.id._serialized)
 			if (foundChat) {
 				if (chatView.isGroup) {
-					const foundViewChat = this.groupChats.find(currentChat => currentChat.id === chatView.id)
+					const foundViewChatIndex = this.groupChats.findIndex(currentChat => currentChat.id === chatView.id)
+					const foundViewChat = this.groupChats[foundViewChatIndex];
+					
+					if(!foundViewChat.pinned) {
+						this.groupChats.splice(foundViewChatIndex, 1);
+						this.groupChats = [...this.groupChats.filter(chat => chat.pinned),
+							 foundViewChat ,
+							 ...this.groupChats.filter(chat => !chat.pinned)];
+					}
+
 					if (foundViewChat) {
 						foundViewChat.lastMessage = chatView.lastMessage;
 					}
 					this.emitter.call("newGroupViewChats", this.groupChats);
 				} else {
-					const foundViewChat = this.userChats.find(currentChat => currentChat.id === chatView.id)
+					const foundViewChatIndex = this.userChats.findIndex(currentChat => currentChat.id === chatView.id)
+					const foundViewChat = this.userChats[foundViewChatIndex];
+
+					if(!foundViewChat.pinned) {
+						this.userChats.splice(foundViewChatIndex, 1);
+						this.userChats = [...this.userChats.filter(chat => chat.pinned),
+							 foundViewChat ,
+							 ...this.userChats.filter(chat => !chat.pinned)];
+					}
+
 					if (foundViewChat) {
 						foundViewChat.lastMessage = chatView.lastMessage;
 					}
-					this.emitter.call("newUserViewChats", this.groupChats);
+					
+					this.emitter.call("newUserViewChats", this.userChats);
 				}
 			} else {
 				this.chats.push(chat);
@@ -77,11 +98,13 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 
 		if(messages.length !== 0) {
 			const msg = messages[0];
-			const author = msg.author || "";
+			let { author } = msg;
+			if(author) author = API.contacts.getNameByUserId(author);
+			else author = '';
 			const stringifiedBody = await this.messagePreview(msg);
 			
 
-			lastMessage = { author, date: new Date(msg.timestamp), stringifiedBody, messageAck: msg.ack }
+			lastMessage = { author, date: new Date(msg.timestamp), stringifiedBody, messageAck: msg.ack, fromMe: msg.fromMe }
 		}
 
 		
@@ -94,7 +117,9 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 			lastMessage,
 			timestamp: chat.timestamp,
 			unreadCount: chat.unreadCount,
-			imageUrl: undefined
+			imageUrl: undefined,
+			//@ts-ignore
+			pinned: chat.pinned
 
 		}
 	}

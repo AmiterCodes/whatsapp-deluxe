@@ -21,6 +21,10 @@ class UserContacts extends WhatsAppDeluxeAPIService<ContactEvents> {
         return num;
     }
 
+    public getNameByUserId(id: string) : string {
+        return this.getNameByNumber(id.split("@")[0])
+    }
+
     serviceDidInitialized() {
         this.fillContacts();
     }
