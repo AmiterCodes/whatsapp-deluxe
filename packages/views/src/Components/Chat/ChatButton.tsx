@@ -1,14 +1,31 @@
 import React, { Component } from 'react';
 
-import { Views, Chat, Message, Contact } from '@whatsapp-deluxe/shared/src'
+import { Views } from '@whatsapp-deluxe/shared'
+import { Chat } from '@whatsapp-deluxe/shared/src/shared/chat'
+import { ButtonBase, Card, Typography, makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles({
+
+});
 
 
-class ChatButton extends Component<Chat> {
-    render() {
-        /** TODO: implement this component */
-        return <h1>{this.props.lastMessage}</h1>
-    }
+const ChatButton = (props: {chat: Chat}) => {
+    const classes = useStyles();
 
+    const { chat } = props; 
 
-
+    let { lastMessage } = chat;
+    /** TODO: implement this component */
+    return <div>
+        <Card>
+            <Typography>
+                {chat.name}
+            </Typography>
+            <Typography>
+                {lastMessage && `${lastMessage.author}: ${lastMessage.stringifiedBody}`}
+            </Typography>
+        </Card>
+    </div>
 }
+
+export default ChatButton;

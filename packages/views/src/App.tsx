@@ -1,11 +1,12 @@
 import React from 'react';
-import './App.css';
+import { Client } from '@react-fullstack/fullstack-socket-client'
+import * as Components from "./components";
 
 
 function App() {
   return (
-    <div className="App">
-      
+    <div>
+      <Client host={"localhost"} port={9494} views={Components} /> 
     </div>
   );
 }

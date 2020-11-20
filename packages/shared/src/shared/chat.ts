@@ -16,7 +16,9 @@ export interface Chat {
     /** Amount of messages unread */
     unreadCount: number;
     /** Last Message that was sent on the chat */
-    lastMessage: MessagePreview;
+    lastMessage: MessagePreview | undefined;
+
+
 }
 
 

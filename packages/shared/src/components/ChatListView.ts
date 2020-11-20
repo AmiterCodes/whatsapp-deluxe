@@ -1,6 +1,6 @@
 import { View } from '@react-fullstack/fullstack'
 import { MessagePreview } from "../shared/message";
-
+import { Chat } from '../shared/chat';
 
 
 interface ChatListViewProps {

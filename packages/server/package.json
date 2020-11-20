@@ -4,18 +4,24 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node src/App.tsx"
   },
   "dependencies": {
     "react": "~16.8.0",
     "@whatsapp-deluxe/shared": "1.0.0",
     "@react-fullstack/fullstack": "0.1.23",
     "@react-fullstack/fullstack-socket-server": "0.1.23",
-    "@react-fullstack/render": "0.1.23"
+    "@react-fullstack/render": "0.1.23",
+    "whatsapp-web.js": "1.11.1",
+    "dotenv": "8.2.0",
+    "qrcode-terminal": "0.12.0"
+    
   },
   "devDependencies": {
     "typescript": "^4.0.5",
+    "ts-node": "9.0.0",
     "@types/node": "^12.19.4",
     "@types/react": "^16.9.56",
     "@types/react-dom": "^16.9.9"
-  },
+  }
+}
