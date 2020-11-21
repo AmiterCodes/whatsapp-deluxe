@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 
 import { DateTime } from 'luxon';
-import { Chat } from '@whatsapp-deluxe/shared/src/shared/chat'
+import { Chat } from '@whatsapp-deluxe/shared/lib/shared/chat'
 import { ButtonBase, Card, Typography, makeStyles, CardContent, CardMedia, Badge } from '@material-ui/core';
-import { MessageAck } from '@whatsapp-deluxe/shared/src/shared/message';
+import { MessageAck } from '@whatsapp-deluxe/shared/lib/shared/message';
 import HourglassEmptyIcon from '@material-ui/icons/HourglassEmpty';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
+import DoneAllIcon from '@material-ui/icons/DoneAll';
+import DoneIcon from '@material-ui/icons/Done';
+import MicIcon from '@material-ui/icons/Mic';
 
 const useStyles = makeStyles({
     content: {
@@ -25,6 +28,8 @@ const useStyles = makeStyles({
         fontSize: '.8rem',
         width: '100%',
         color: 'rgba(0,0,0,0.7)',
+        display: 'flex',
+        alignItems: 'center',
         '&:before': {
             content: '',
             width: '100%',
@@ -48,6 +53,14 @@ const AckDisplay = (props: { ack: MessageAck }) => {
             return <HourglassEmptyIcon />
         case MessageAck.ACK_ERROR:
             return <ErrorOutlineIcon/>
+        case MessageAck.ACK_READ:
+            return <DoneAllIcon htmlColor='#3280fc' />
+        case MessageAck.ACK_DEVICE:
+            return <DoneAllIcon />
+        case MessageAck.ACK_SERVER:
+            return <DoneIcon />
+        case MessageAck.ACK_PLAYED:
+            return <MicIcon />
     }
 }
 
@@ -74,7 +87,10 @@ const ChatButton = (props: { chat: Chat }) => {
                     
                 </div>
                 <Typography className={classes.lastMessage} variant="body1">
-                    {lastMessage && `${lastMessage.author ? lastMessage.author + ":" : ""} ${lastMessage.stringifiedBody}`}
+                    {lastMessage && <>
+                    {lastMessage.fromMe && <span><AckDisplay ack={lastMessage.messageAck} /></span>}
+                    {`${lastMessage.author ? lastMessage.author + ":" : ""} ${lastMessage.stringifiedBody}`}
+                    </> }
                 </Typography>
             </CardContent>
         </Card>

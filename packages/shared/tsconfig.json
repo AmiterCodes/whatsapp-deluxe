@@ -8,9 +8,11 @@
     "module": "CommonJS",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noEmit": true,
+    "noEmit": false,
     "isolatedModules": false,
     "jsx": "react",
+    "outDir": "./lib",
+    "declaration": true
   },
   "include": [
     "src"

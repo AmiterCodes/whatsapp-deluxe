@@ -22,6 +22,6 @@
     "baseUrl": "src",
   },
   "include": [
-    "src", "../shared/src/shared/message.tsx"
+    "src", "../shared/src/shared/message.ts"
   ]
 }

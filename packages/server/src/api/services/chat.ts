@@ -27,7 +27,7 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 		console.log('loaded Group Chats')
 		this.emitter.call("newUserViewChats", this.userChats);
 		this.emitter.call("newGroupViewChats", this.groupChats);
-		this.client.on(Events.MESSAGE_CREATE,async (msg) => {
+		const messageUpdateEventHandler = async (msg : Message) => {
 			const chat = await msg.getChat();
 			const chatView = await this.mapChat(chat);
 			const foundChat = this.chats.find((currentChat) => currentChat.id._serialized === chat.id._serialized)
@@ -74,7 +74,13 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 					this.emitter.call("newUserViewChats", this.userChats);
 				}
 			}
-		})
+		} 
+		
+		this.client.on(Events.MESSAGE_ACK, messageUpdateEventHandler)
+		this.client.on(Events.MESSAGE_REVOKED_EVERYONE, messageUpdateEventHandler)
+		
+
+		this.client.on(Events.MESSAGE_CREATE, messageUpdateEventHandler)
 		} catch(e) {
 			console.log(e);
 		}
