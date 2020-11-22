@@ -1,9 +1,9 @@
 import { WhatsAppDeluxeAPIService } from "../service";
-import { Contact as ViewContact } from "@whatsapp-deluxe/shared/src/shared/contact";
-import { Contact as WhatsAppContact } from "whatsapp-web.js";
+import { Contact as ViewContact, Participant } from "@whatsapp-deluxe/shared/src/shared/contact";
+import { Contact as WhatsAppContact, Chat } from "whatsapp-web.js";
 
 interface ContactEvents {
-
+    
 }
 
 class UserContacts extends WhatsAppDeluxeAPIService<ContactEvents> {
@@ -28,6 +28,7 @@ class UserContacts extends WhatsAppDeluxeAPIService<ContactEvents> {
     serviceDidInitialized() {
         this.fillContacts();
     }
+
 }
 
 export default UserContacts;

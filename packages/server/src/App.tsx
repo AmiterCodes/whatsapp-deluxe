@@ -3,6 +3,7 @@ import { Render } from "@react-fullstack/render";
 import { Server } from "@react-fullstack/fullstack-socket-server";
 import { Views } from "@whatsapp-deluxe/shared";
 import ChatList from "./components/ChatList";
+import ChatView from './components/ChatView';
 import dotenv from "dotenv";
 import API from "./api";
 dotenv.config();
@@ -18,13 +19,14 @@ const initializeApp = async () => {
 };
 
 const App = () => {
-    const [isInitialized, setIsInitialized] = useState(API.isInitialized)
+  const [activeChat, setActiveChat] = useState('')
+  const [isInitialized, setIsInitialized] = useState(API.isInitialized)
     useEffect(() => {
         API.emitter.on("initialize", (currentIsInitialized) => {
             setIsInitialized(currentIsInitialized);
         })
     }, [])
-  return isInitialized ? <ChatList setChatId={() => {}} /> : <></>;
+  return isInitialized ? <><ChatList setChatId={(id) => {setActiveChat(id)}} /><ChatView chatId={activeChat} /></> : <></>;
 };
 
 initializeApp();

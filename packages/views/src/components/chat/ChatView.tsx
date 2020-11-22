@@ -1,14 +1,23 @@
-import React, { Component } from "react";
+import React from "react";
 import { ViewsInterface } from "@whatsapp-deluxe/shared";
 import { List } from "@material-ui/core";
 import MessageView from "./MessageView";
+import { Component } from "@react-fullstack/fullstack";
+import { Typography } from '@material-ui/core'
 
-export default class ChatView extends Component<ViewsInterface["ChatView"]> {
+class ChatView extends Component<ViewsInterface["ChatView"]> {
     render() {
-        let { messages, name, participants } = this.props.props;
+        let { messages, name, participants } = this.props;
 
-        return <List>
-            {messages.map(message => <MessageView message={message} />)}
-        </List>
+        return <div>
+            <Typography>
+                { name }
+            </Typography>
+            <List style={{ width:'70vw' }}>
+                {messages.map(message => <MessageView message={message} />)}
+            </List>
+        </div>
     }
 }
+
+export default ChatView;

@@ -23,3 +23,11 @@ export interface Contact {
 	shortName?: string;
 }
   
+export interface Participant {
+	
+	name?: string;
+	pushname: string;
+	chatId: string;
+	isAdmin: boolean;
+	profilePicture?: string;
+}

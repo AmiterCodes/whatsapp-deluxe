@@ -1,6 +1,7 @@
 import { Client, ClientSession } from 'whatsapp-web.js'
 import ChatsService from "./services/chat";
 import ContactService from './services/contact'
+import MessagesService from './services/message'
 // @ts-ignore
 import qrcode from 'qrcode-terminal';
 import Emitter from '../utils/emitter';
@@ -20,6 +21,7 @@ class WhatsAppDeluxeAPI {
 	private client!: Client;
     public chats = new ChatsService();
     public contacts = new ContactService();
+    public messages = new MessagesService();
 
     public readonly emitter = new Emitter<WhatsAppDeluxeAPIEvents>();
     private _isInitialized = false;

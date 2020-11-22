@@ -1,21 +1,26 @@
-import { Chat as WhatsAppChat, Message, MessageTypes, Events } from "whatsapp-web.js";
+import { Chat as WhatsAppChat, Message, MessageTypes, Events, GroupNotification } from "whatsapp-web.js";
 import { Chat as ViewChat } from '@whatsapp-deluxe/shared/src/shared/chat'
+
+
 import { WhatsAppDeluxeAPIService } from "../service";
-import { sleep } from "../../utils/time"
 import { MessagePreview } from "@whatsapp-deluxe/shared/src/shared/message";
 import API from "../";
+import { Participant } from "@whatsapp-deluxe/shared/src/shared/contact";
 
 
 
 interface ChatsEvents {
 	newUserViewChats: ViewChat[];
 	newGroupViewChats: ViewChat[];
+	participantUpdate: { chatId: string, participants: Participant[] }
 }
 
 class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 	chats: Array<WhatsAppChat> = [];
 	userChats: ViewChat[] = [];
 	groupChats: ViewChat[] = [];
+
+
 
 	private async autoUpdateChats() {
 		try {
@@ -39,13 +44,10 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 					if(!foundViewChat.pinned) {
 						this.groupChats.splice(foundViewChatIndex, 1);
 						this.groupChats = [...this.groupChats.filter(chat => chat.pinned),
-							 foundViewChat ,
+							 chatView,
 							 ...this.groupChats.filter(chat => !chat.pinned)];
 					}
 
-					if (foundViewChat) {
-						foundViewChat.lastMessage = chatView.lastMessage;
-					}
 					this.emitter.call("newGroupViewChats", this.groupChats);
 				} else {
 					const foundViewChatIndex = this.userChats.findIndex(currentChat => currentChat.id === chatView.id)
@@ -54,13 +56,10 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 					if(!foundViewChat.pinned) {
 						this.userChats.splice(foundViewChatIndex, 1);
 						this.userChats = [...this.userChats.filter(chat => chat.pinned),
-							 foundViewChat ,
+							 chatView,
 							 ...this.userChats.filter(chat => !chat.pinned)];
 					}
 
-					if (foundViewChat) {
-						foundViewChat.lastMessage = chatView.lastMessage;
-					}
 					
 					this.emitter.call("newUserViewChats", this.userChats);
 				}
@@ -75,11 +74,19 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 				}
 			}
 		} 
+
+		const participantUpdateEventHandler = async (notification: GroupNotification) => {
+			let { chatId } = notification;
+
+			this.emitter.call('participantUpdate', { chatId, participants: await this.loadParticipants(chatId) })
+		}
+
+		this.client.on(Events.GROUP_JOIN, participantUpdateEventHandler)
+		this.client.on(Events.GROUP_LEAVE, participantUpdateEventHandler)
+
 		
 		this.client.on(Events.MESSAGE_ACK, messageUpdateEventHandler)
 		this.client.on(Events.MESSAGE_REVOKED_EVERYONE, messageUpdateEventHandler)
-		
-
 		this.client.on(Events.MESSAGE_CREATE, messageUpdateEventHandler)
 		} catch(e) {
 			console.log(e);
@@ -97,10 +104,44 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 		return chats;
 	}
 
+
+
+    async loadParticipants(chatId: string) : Promise<Array<Participant>> {
+		let chat = await this.client.getChatById(chatId);
+		if(chat.isGroup) {
+			//@ts-ignore
+			let participants = [...chat.participants];
+            
+            return Promise.all(participants.map(participant => this.mapParticipant(participant)))
+		} else {
+            let contact = { id: { _serialized: chatId }, isAdmin: false };
+            let me = { id: { _serialized: this.client.info.wid._serialized }, isAdmin: false };
+            return Promise.all([this.mapParticipant(contact), this.mapParticipant(me)])
+		}
+
+	}	
+
+	private async mapParticipant(participant: { id: { _serialized: string; }, isAdmin: boolean }) : Promise<Participant> {
+        let contact = await this.client.getContactById(participant.id._serialized)
+
+        const { isAdmin } = participant;
+
+        return {
+            chatId: contact.id._serialized,
+            isAdmin,
+            name: contact.name,
+            pushname: contact.pushname,
+            profilePicture: await contact.getProfilePicUrl()
+        }
+    }
+
+
 	private async mapChat (chat: WhatsAppChat): Promise<ViewChat> {
 		let messages = await chat.fetchMessages({ limit: 1 })
 		let lastMessage: MessagePreview | undefined;
-		//let imageUrl = await this.client.getProfilePicUrl(chat.id._serialized);
+		let imageUrl = undefined;
+		if(!chat.isGroup)
+			imageUrl = await this.client.getProfilePicUrl(chat.id._serialized);
 
 		if(messages.length !== 0) {
 			const msg = messages[0];
@@ -123,7 +164,7 @@ class Chats extends WhatsAppDeluxeAPIService<ChatsEvents> {
 			lastMessage,
 			timestamp: chat.timestamp,
 			unreadCount: chat.unreadCount,
-			imageUrl: undefined,
+			imageUrl,
 			//@ts-ignore
 			pinned: chat.pinned
 
