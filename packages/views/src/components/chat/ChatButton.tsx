@@ -96,15 +96,15 @@ const ChatButton = (props: { chat: Chat, onClick: Function }) => {
 
     let { lastMessage } = chat;
     return <Card className={classes.root}>
-            <CardActionArea className={classes.action}>
-                <Badge badgeContent={chat.unreadCount} invisible={chat.unreadCount == 0} color="secondary" max={1000} overlap="circle">
+            <CardActionArea className={classes.action} onClick={() => props.onClick()} >
+                <Badge badgeContent={chat.unreadCount} invisible={chat.unreadCount === 0} color="secondary" max={1000} overlap="circle">
                     <CardMedia className={classes.media} image={chat.imageUrl || 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/User_font_awesome.svg/1200px-User_font_awesome.svg.png'}>
                     </CardMedia>
                 </Badge>
                 <CardContent className={classes.content}>
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <Typography className={classes.title} variant="h3">
+                        <Typography className={classes.title} variant="h3"> 
                             {chat.name}
 
                         </Typography>
@@ -114,7 +114,7 @@ const ChatButton = (props: { chat: Chat, onClick: Function }) => {
                     <Typography className={classes.lastMessage} variant="body1">
                         {lastMessage && <>
                         {lastMessage.fromMe && <span className={classes.ack}><AckDisplay ack={lastMessage.messageAck} /></span>}
-                        <span className={classes.messageBody}>{`${lastMessage.author ? lastMessage.author + ":" : ""} ${lastMessage.stringifiedBody}`}</span>
+                        <span className={classes.messageBody}>{`${lastMessage.author ? lastMessage.author + ":" : ""} ${lastMessage.stringifiedBody.substr(0,120)} ${lastMessage.stringifiedBody.length > 120 ? "..." : ""}`}</span>
                         </> }
                     </Typography>
                     <div>

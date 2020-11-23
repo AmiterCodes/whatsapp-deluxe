@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/App.tsx"
+    "start": "ts-node src/App.tsx --trace-warningss"
   },
   "dependencies": {
-    "react": "~16.8.0",
+    "react": "~16.14.0",
     "@whatsapp-deluxe/shared": "1.0.0",
     "@react-fullstack/fullstack": "0.1.23",
     "@react-fullstack/fullstack-socket-server": "0.1.23",
@@ -21,7 +21,7 @@
     "typescript": "^4.0.5",
     "ts-node": "9.0.0",
     "@types/node": "^12.19.4",
-    "@types/react": "^16.9.56",
-    "@types/react-dom": "^16.9.9"
+    "@types/react": "16.14.0",
+    "@types/react-dom": "16.9.10"
   }
 }

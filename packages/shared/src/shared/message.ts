@@ -67,9 +67,14 @@ export interface Message {
             messageMedia?: MessageMedia
 }
 
+export interface MessageToSend {
+    content: string;
+    chatId: string;
+}
+
 export interface MessageMedia {
-    mimetype: string,
-    data: string,
+    mimetype: string;
+    data: string;
     filename: string | undefined | null
 }
 

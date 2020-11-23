@@ -14,12 +14,12 @@ class ChatList extends Component<ViewsInterface["ChatListView"]> {
 
 		const rowRenderer : ListRowRenderer = ({ index,key,style })=> {
 			const chat = this.props.chats[index]; 
-			return <div style={style}><ChatButton onClick={() => this.props.setActiveChat(chat.id)} key={chat.id} chat={chat} /></div>;
+			return <div key={chat.id} style={style}><ChatButton onClick={() => this.props.setActiveChat(chat.id)}  chat={chat} /></div>;
 		}
 
 		return <List 
 		height={window.innerHeight}
-		style={{ padding: 0, margin: 0 }}
+		style={{ padding: 0, margin: 0, outline: 'none' }}
 		rowHeight={100} 
 		rowCount={this.props.chats.length} 
 		rowRenderer={rowRenderer}

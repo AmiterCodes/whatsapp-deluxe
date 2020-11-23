@@ -5,6 +5,7 @@ import MessagesService from './services/message'
 // @ts-ignore
 import qrcode from 'qrcode-terminal';
 import Emitter from '../utils/emitter';
+import { runScripts } from '../scripts/';
 
 declare var process: {
     env: {
@@ -18,7 +19,7 @@ interface WhatsAppDeluxeAPIEvents {
 }
 
 class WhatsAppDeluxeAPI {
-	private client!: Client;
+	public client!: Client;
     public chats = new ChatsService();
     public contacts = new ContactService();
     public messages = new MessagesService();
@@ -44,11 +45,14 @@ class WhatsAppDeluxeAPI {
         this.client.on('ready', () => {
             this._isInitialized = true;
             this.emitter.call("initialize", true);
+            
+            runScripts();
         })
 
         this.contacts.initialize(this.client);
         this.chats.initialize(this.client);
-        
+        this.messages.initialize(this.client);
+
 	}
 }
 

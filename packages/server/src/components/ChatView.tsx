@@ -1,6 +1,6 @@
 import { Message } from "@whatsapp-deluxe/shared/lib/shared/message";
 import API from '../api';
-import React from 'react';
+import React, { Component } from 'react';
 import { useState, useEffect } from "react";
 import { ViewsProvider } from "@react-fullstack/fullstack";
 import { ViewsInterface } from "@whatsapp-deluxe/shared";
@@ -10,48 +10,80 @@ interface ChatViewProps {
     chatId: string;
 }
 
-const Chat = ({ chatId } : ChatViewProps) => {
 
-    if(chatId == '') {
-        return (<ViewsProvider<ViewsInterface>>
-            {({ ChatView }) => <ChatView participants={[]} messages={[]} name={'No Chat Selected!'} /> }
-        </ViewsProvider>);
+interface ChatViewState { 
+    messages: Message[];
+    participants: Participant[];
+    name: string;
+ }
+
+class Chat extends Component<ChatViewProps, ChatViewState> {
+    state : ChatViewState = {
+        messages: [],
+        name: 'No Chat Selected',
+        participants: [],
     }
 
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [participants, setParticipants] = useState<Participant[]>([])
-    const [name, setName] = useState<string>('Chat');
-    useEffect(() => {
+    listenerCleanups: Function[] = []
 
-        API.chats.loadParticipants(chatId).then((paritcipantList) => {
-            setParticipants(paritcipantList);
-        })
+    componentDidMount() {
+        this.updateChatData(this.props);
+    }
 
-        API.messages.loadMessages(chatId, 50).then((messageList) => {
-            setMessages(messageList);
-        })
-
-        const messageFetching = API.messages.emitter.on('messagesUpdated', newMessages => {
-            setMessages(newMessages);
-        })
-        const participantFetching = API.chats.emitter.on('participantUpdate', newParticipants => {
-            if(chatId == newParticipants.chatId) setParticipants(newParticipants.participants);
-        })
-        return () => {
-            messageFetching.remove();
-            participantFetching.remove();    
+    shouldComponentUpdate(nextProps: ChatViewProps) {
+        if(this.props.chatId !== nextProps.chatId) {
+            this.updateChatData(nextProps)
         }
-    }, [])
+        
+        return true;
+    }
 
+    updateChatData(props: ChatViewProps) {
 
-    return (<ViewsProvider<ViewsInterface>>
-        {({ ChatView }) => <ChatView participants={participants} messages={messages} name={name} /> }
-    </ViewsProvider>)
+        this.listenerCleanups.forEach(f => f());
 
+        const { chatId } = props;
 
+        API.chats.loadParticipants(chatId).then((participants) => {
+            this.setState({ participants });
+        })
 
+        API.messages.loadMessages(chatId, 50).then((messages) => {
+            this.setState({ messages: [ ...messages ] });
+        })
 
+        const messageFetching = API.messages.emitter.on('messagesUpdated', messagesData => {
+            if(chatId == messagesData.chatId) this.setState({ messages: [...this.state.messages, ...messagesData.messages] });
+        })
+        const participantFetching = API.chats.emitter.on('participantUpdate', participantsData => {
+            if(chatId == participantsData.chatId) this.setState({ participants: participantsData.participants });
+        })
 
+        this.listenerCleanups.push(messageFetching.remove, participantFetching.remove);
+    }
+
+    render() {
+
+        console.log("n word shmuel")
+
+        const { chatId } = this.props;
+        const { participants, messages, name } = this.state; 
+            
+
+        if(chatId == '') {
+            return (<ViewsProvider<ViewsInterface>>
+                {({ ChatView }) => <ChatView participants={[]} messages={[]} name={'No Chat Selected!'} /> }
+            </ViewsProvider>);
+        }
+    
+
+    
+        return (<ViewsProvider<ViewsInterface>>
+            {({ ChatView }) => <ChatView participants={participants} messages={messages} name={name} /> }
+        </ViewsProvider>)
+    }
 }
+
+
 
 export default Chat;

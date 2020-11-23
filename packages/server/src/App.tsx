@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Render } from "@react-fullstack/render";
 import { Server } from "@react-fullstack/fullstack-socket-server";
-import { Views } from "@whatsapp-deluxe/shared";
+import { Views, ViewsInterface } from "@whatsapp-deluxe/shared";
 import ChatList from "./components/ChatList";
 import ChatView from './components/ChatView';
 import dotenv from "dotenv";
 import API from "./api";
+import { ViewsProvider } from "@react-fullstack/fullstack";
 dotenv.config();
 
 const initializeApp = async () => {
@@ -26,7 +27,14 @@ const App = () => {
             setIsInitialized(currentIsInitialized);
         })
     }, [])
-  return isInitialized ? <><ChatList setChatId={(id) => {setActiveChat(id)}} /><ChatView chatId={activeChat} /></> : <></>;
+    
+  return isInitialized ? <ViewsProvider<ViewsInterface>>
+    {({ WhatsAppProvider }) => <WhatsAppProvider>
+      <ChatList setChatId={(id) => {setActiveChat(id)}} /><ChatView chatId={activeChat} />
+      </WhatsAppProvider>
+
+    }
+  </ViewsProvider> : <></>;
 };
 
 initializeApp();

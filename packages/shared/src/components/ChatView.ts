@@ -1,11 +1,12 @@
 import { View } from '@react-fullstack/fullstack'
-import { Message } from "../shared/message";
+import { Message, MessageToSend } from "../shared/message";
 import { Participant } from "../shared/contact";
 
 export interface ChatViewProps {
     messages: Array<Message>;
     name: string;
     participants: Participant[];
+    sendMessage: (message: MessageToSend) => void;
 }
 
 type ChatView = View<ChatViewProps>;

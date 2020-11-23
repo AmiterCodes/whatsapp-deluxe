@@ -63,6 +63,10 @@ export interface Message {
     type: MessageTypes;
     messageMedia?: MessageMedia;
 }
+export interface MessageToSend {
+    content: string;
+    chatId: string;
+}
 export interface MessageMedia {
     mimetype: string;
     data: string;

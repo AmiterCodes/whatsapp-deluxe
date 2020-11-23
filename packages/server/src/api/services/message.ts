@@ -2,21 +2,22 @@ import { WhatsAppDeluxeAPIService } from "../service";
 
 
 import { Message as ViewMessage, MessageMedia } from "@whatsapp-deluxe/shared/lib/shared/message";
-import { Message as WhatsAppMessage } from "whatsapp-web.js";
+import { Events, Message, Message as WhatsAppMessage } from "whatsapp-web.js";
 
 
 interface MessageEvents {
-    messagesUpdated: ViewMessage[];
+    messagesUpdated: { messages: ViewMessage[], chatId: string; };
 }
 
 export default class Messages extends WhatsAppDeluxeAPIService<MessageEvents> {
-    
+
+
     private async mapMessage(message: WhatsAppMessage) : Promise<ViewMessage> {
 
         let messageMedia;
         if(message.hasMedia) {
             let waMessageMedia = await message.downloadMedia();
-            let messageMedia: MessageMedia = {
+            messageMedia = {
                 mimetype: waMessageMedia.mimetype,
                 data: waMessageMedia.data,
                 filename: waMessageMedia.filename 
@@ -47,7 +48,21 @@ export default class Messages extends WhatsAppDeluxeAPIService<MessageEvents> {
     }
 
     async serviceDidInitialized() {
+        this.startLoadingMessages();
+    }
 
+    async startLoadingMessages() {
+
+        const messageUpdateEventHandler = async (message: WhatsAppMessage) => {
+            const chat = await message.getChat();
+            
+            this.emitter.call('messagesUpdated', {
+                chatId: chat.id._serialized,
+                messages: [await this.mapMessage(message)]
+            })
+        }
+
+        this.client.on(Events.MESSAGE_CREATE, messageUpdateEventHandler)
     }
 
     async loadMessages(chatId: string, amount: number) {

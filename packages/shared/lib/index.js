@@ -4,5 +4,6 @@ exports.Views = void 0;
 exports.Views = {
     ChatListView: {},
     ChatView: {},
+    WhatsAppProvider: {},
     ConnectionScreen: {},
 };
